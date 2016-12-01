@@ -17,5 +17,10 @@ def colors():
     result = check_output(["identify", "-format", "%k", temp.name])
     return result
 
+@app.route("/")
+def index():
+    return "Hello!"
+
+
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')

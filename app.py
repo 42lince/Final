@@ -4,8 +4,9 @@ import requests
 from subprocess import check_output
 import tempfile
 
-app = Flask(__name__)
 
+app = Flask(__name__)
+app.debug = True
 
 @app.route("/api/num_colors")
 def colors():
@@ -14,7 +15,11 @@ def colors():
     temp = tempfile.NamedTemporaryFile()
     with open(temp.name, 'wb') as fd:
         fd.write(r.content)
-    result = check_output(["identify", "-format", "%k", temp.name])
+    try:
+        result = check_output(["/usr/bin/identify", "-format", "%k", temp.name])
+    except subprocess.CalledProcessError as e:
+        print(e.output)
+        raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
     return result
 
 @app.route("/")
